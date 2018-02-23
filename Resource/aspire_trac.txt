@@ -1,0 +1,90 @@
+*** Settings ***
+Library           Collections
+Library           ../Library/MyLibrary.py
+Library           ../Library/WrapperMethod.py
+Library           BuiltIn
+*** Variables ***
+${URL}         http://trac.aspiresys.com/
+${USERNAME}    ############
+${PSWD}        ************
+${BROWSER}        Firefox
+${DELAY}           10
+${NOTc}            8
+${Release}         3
+${ProVersion}      1
+${Action}          closed
+${WorflowText}     Done
+${TicketType}     Maintenance
+
+*** Keywords ***
+Open Browser To Trac Page
+    Open Browser    ${URL}    ${BROWSER}
+    Set Selenium Timeout  ${DELAY}
+    Maximize Browser Window
+    Input Text    user    ${USERNAME}
+    Input Text    password    ${PSWD}
+    Click Button    Login
+    Title Should Be   Available Projects – PMO
+
+
+Click Narvar Project
+    Click link  USA_0192_01
+    Title Should Be  Narvar
+
+Open My Tickets
+    Mouse Over  //a[text()='Dashboard']
+    Wait Until Element Is Visible   link:My Tickets
+    Click link  My Tickets
+    ${Title}=    Get Title
+    Log    Title is ${Title}
+    Should Contain    ${Title}      My Tickets – Narvar
+
+
+Print the href of the table
+    ${AllTableCount}=    Get Element Count   //td[@class='summary']
+    Comment    Log links count
+    log to console  (link text   ${AllTableCount})
+    @{AllLinks}    Create List
+    : FOR    ${INDEX}    IN RANGE    1  ${AllTableCount}+1
+    \   Log    ${INDEX}
+    \   ${lintext}=    Get Text    xpath:(//td[@class='summary'])[${INDEX}]
+    \   ${href}=    Get Element Attribute    xpath:(//td[@class='summary']/a)[${INDEX}]     href
+    \   Log    ${href}
+    \   log to console   (link text  ${lintext} " href "  ${href})
+    \   Append To List    ${AllLinks}    ${href}
+    [Return]  @{AllLinks}
+
+Close All tickets
+    [Arguments]  @{ftemp}
+    : FOR    ${single}  IN   @{ftemp}
+    \   Open Seperate Browser    ${single}
+    \   Click link  Edit
+    \   Input Text  field-no_of_testc_pre   ${NOTc}
+    \   Input Text  field-no_of_testc_passed    ${NOTc}
+    \   Input Text  field-no_of_testc_exec     ${NOTc}
+    \   Select From List By Label   field-release   ${Release}
+    \   Select From List By Label   field-product_version_feature   ${ProVersion}
+    \   Select From List By Label   name:action     ${Action}
+    \   Wait Until Element Is Visible   xpath://div[@aria-labelledby='ui-dialog-title-dialog-workflow' and contains(@style,'display: block')]
+    \   Input Text  workflow-reason   ${WorflowText}
+    \   Wait Until Keyword Succeeds     30 sec  1 sec   Click Button    xpath://button[.='Save' and @aria-disabled='false']
+    \   Click Button    xpath://input[@value='Submit changes']
+    \   Wait Until Element Is Visible   xpath://*[text()='(closed)']
+
+Open Create Tickets
+    Mouse Over  //a[text()='Tickets']
+    Wait Until Element Is Visible   link:Create Ticket
+    Click link  Create Ticket
+    ${Title}=    Get Title
+    Log    Title is ${Title}
+    Should Contain    ${Title}      New Ticket – Narvar
+
+Create All tickets
+    [Arguments]  @{tickets}
+    : FOR    ${ticket}  IN   @{tickets}
+    \   Open Create Tickets
+    \   Create Ticket   ${ticket}
+    #\   Select From List By Label   field_type   ${TicketType}
+    #\   Input Text  field-summary   ${ticket}.name
+    #\   Select From List By Label  field-task_priority   major
+    #\   Select From List By Label   field-owner     ${ticket}.owner
