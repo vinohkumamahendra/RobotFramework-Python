@@ -9,10 +9,11 @@ class TracTicket:
         self.release = None
         self.version = None
         self.owner = None
-        self.time = None
-        self.task = None
+        self.tasklist = {}
+        self.day_tasklist = {}
+        self.trac_id = None
 
-    def __init__(self, name,priority,plannedStart, plannedEnd,noTestCase,release,version,owner,time,task):
+    def __init__(self, name,priority,plannedStart, plannedEnd,noTestCase,release,version,owner,tasklist,day_tasklist):
         self.name = name
         if(priority.lower() == 'critical' and priority.lower() == 'blocker'):
             self.priority = "blocker"
@@ -28,8 +29,9 @@ class TracTicket:
         self.release = str(release)
         self.version = str(version)
         self.owner = owner
-        self.time = str(time)
-        self.task = task
+        self.tasklist = tasklist
+        self.trac_id = ""
+        self.day_tasklist = day_tasklist
 
     @property
     def name(self):
@@ -94,22 +96,29 @@ class TracTicket:
     @name.setter
     def owner(self, value):
         self.owner = value
-
     @property
-    def time(self):
-        return self.time
+    def tasklist(self):
+        return self.tasklist
 
     @name.setter
-    def time(self, value):
-        self.time = value
+    def tasklist(self, value):
+        self.tasklist = value
 
     @property
-    def task(self):
-        return self.task
+    def trac_id(self):
+        return self.trac_id
 
     @name.setter
-    def task(self, value):
-        self.task = value
+    def trac_id(self, value):
+        self.trac_id = value
+
+    @property
+    def day_tasklist(self):
+        return self.day_tasklist
+
+    @name.setter
+    def day_tasklist(self, value):
+        self.day_tasklist = value
 
     def printDetails(self):
         print("Name ",self.name)
@@ -120,6 +129,7 @@ class TracTicket:
         print("release ", self.release)
         print("version ", self.version)
         print("Owner ", self.owner)
-        print("Time ", self.time)
-        print("Task ", self.task)
+        print("Task List ", self.tasklist)
+        print("Day Task List ", self.day_tasklist)
+        print("Trac Id ", self.trac_id)
 
