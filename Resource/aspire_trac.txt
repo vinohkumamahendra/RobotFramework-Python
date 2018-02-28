@@ -5,8 +5,8 @@ Library           ../Library/WrapperMethod.py
 Library           BuiltIn
 *** Variables ***
 ${URL}         http://trac.aspiresys.com/
-${USERNAME}    ############
-${PSWD}        ************
+${USERNAME}    vinoth.mahendira
+${PSWD}        Vino_Feb18
 ${BROWSER}        Firefox
 ${DELAY}           10
 ${NOTc}            8
@@ -88,3 +88,7 @@ Create All tickets
     #\   Input Text  field-summary   ${ticket}.name
     #\   Select From List By Label  field-task_priority   major
     #\   Select From List By Label   field-owner     ${ticket}.owner
+
+Click Weekly Timesheet
+    Mouse Over  //a[text()='Timesheet']
+    Wait Until Element Is Visible   link:Weekly
