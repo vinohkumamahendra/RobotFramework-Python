@@ -15,8 +15,8 @@ Close Track tickets
 
 
 Read the Ticket
-    @{TrckTicket}=   Read this week ticket   Vinoth Progress.xlsx
-    Open Browser To Trac Page
-    Click Narvar Project
-    Create All tickets   @{TrckTicket}
+    #Open Browser To Trac Page
+    #Click Narvar Project
+    @{tickets}=   Read this week ticket     Vinoth Progress.xlsx
+    #Create All tickets  @{tickets}
 
