@@ -15,9 +15,10 @@ from decimal import *
 from selenium import webdriver
 import sys
 
+
 class WrapperMethod(Selenium2Library):
     @keyword('Open Seperate Browser')
-    def open_seperate_browser(self,url):
+    def open_seperate_browser(self, url):
         driver = self._current_browser();
         # open tab
         driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + 't')
@@ -29,24 +30,22 @@ class WrapperMethod(Selenium2Library):
         driver.get(url)
 
     @keyword('Read this week ticket')
-    def read_this_week_ticket(self,excel_id):
-        #file = ReadGoogleSheet().get_spreadSheet()
-        #book = open_workbook(file_contents=file.read())
+    def read_this_week_ticket(self, excel_id):
+        # file = ReadGoogleSheet().get_spreadSheet()
+        # book = open_workbook(file_contents=file.read())
         book = open_workbook("../Data/" + excel_id)
         TrackTickets = []
-        sheet_names = {"Alert Ticket","Return Bug Ticket","TRACK","Other","Alert Bug"}
-        #sheet_names = {  "Alert Bug"}
+        sheet_names = {"Alert Ticket", "Return Bug Ticket", "TRACK", "Other", "Alert Bug"}
+        # sheet_names = {  "Alert Bug"}
         for sheet in sheet_names:
-            for item in self.create_track_tickets_list(sheet,book):
+            for item in self.create_track_tickets_list(sheet, book):
                 TrackTickets.append(item)
 
         return TrackTickets
 
-
-
     @keyword('Create Ticket')
-    def create_ticket(self,tractk):
-        delay =10;
+    def create_ticket(self, tractk):
+        delay = 10;
         driver = self._current_browser();
         select = Select(driver.find_element_by_id('field-type'))
         select.select_by_visible_text('Maintenance')
@@ -54,7 +53,7 @@ class WrapperMethod(Selenium2Library):
         select = Select(driver.find_element_by_id('field-task_priority'))
         select.select_by_visible_text(tractk.priority)
         psd = driver.find_element_by_id('field-psd')
-        driver.execute_script("arguments[0].value =arguments[1];",psd,tractk.plannedStart)
+        driver.execute_script("arguments[0].value =arguments[1];", psd, tractk.plannedStart)
         ped = driver.find_element_by_id('field-ped')
         driver.execute_script("arguments[0].value =arguments[1];", ped, tractk.plannedEnd)
         if "Test Case Creation" in tractk.tasklist.keys():
@@ -71,18 +70,19 @@ class WrapperMethod(Selenium2Library):
         print("Title of the page ", driver.title)
         assert (tractk.name in driver.title)
         tractk.trac_id = driver.current_url.replace("https://prism.aspiresys.com/Narvar/ticket/", "")
-        print("Trac id",tractk.trac_id)
+        print("Trac id", tractk.trac_id)
         driver.find_element_by_id("estimatedhours-" + tractk.trac_id).click();
-        WebDriverWait(driver,delay).until(EC.visibility_of_element_located((By.XPATH, "//div[@aria-labelledby='ui-dialog-title-estimated-hours-dialog-list'][contains(@style,'block')]")))
+        WebDriverWait(driver, delay).until(EC.visibility_of_element_located((By.XPATH,
+                                                                             "//div[@aria-labelledby='ui-dialog-title-estimated-hours-dialog-list'][contains(@style,'block')]")))
         for key in tractk.tasklist.keys():
-            WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.ID,"#add-new")))
+            WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.ID, "#add-new")))
             driver.find_element_by_id("#add-new").click()
             WebDriverWait(driver, delay).until(EC.visibility_of_element_located((By.XPATH,
                                                                                  "//div[@aria-labelledby='ui-dialog-title-estimated-hours-dialog-entry'][contains(@style,'block')]")))
-            WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.ID,"timesheet_hours")))
-            time = Decimal(tractk.tasklist[key])
+            WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.ID, "timesheet_hours")))
+            time = Decimal(tractk.tasklist[key][1])
             hour = int(time)
-            minute = str(int((time-hour)*60)).zfill(2)
+            minute = str(int((time - hour) * 60)).zfill(2)
             driver.find_element_by_id("timesheet_hours").clear()
             driver.find_element_by_id("timesheet_hours").send_keys(str(hour))
             select = Select(driver.find_element_by_id('timesheet_minutes'))
@@ -91,8 +91,10 @@ class WrapperMethod(Selenium2Library):
             select.select_by_visible_text(key)
             driver.find_element_by_id("timesheet_comments").send_keys(key)
             driver.find_element_by_id("save").click()
-            WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.XPATH,"//*[text()='"+ key.lower() +"']/following-sibling::*[text()='" + key + "']")))
-        WebDriverWait(driver, delay).until(EC.element_to_be_clickable((By.XPATH, "//a[.='close'][ancestor::div[contains(@style,'block')]]")))
+            WebDriverWait(driver, delay).until(EC.element_to_be_clickable(
+                (By.XPATH, "//*[text()='" + key.lower() + "']/following-sibling::*[text()='" + key + "']")))
+        WebDriverWait(driver, delay).until(
+            EC.element_to_be_clickable((By.XPATH, "//a[.='close'][ancestor::div[contains(@style,'block')]]")))
         driver.find_element_by_xpath("//a[.='close'][ancestor::div[contains(@style,'block')]]").click()
         estimated_hour = driver.find_element_by_id("estimatedhours-" + tractk.trac_id).text
         print("Calculated Estimated Hour ", estimated_hour)
@@ -103,9 +105,9 @@ class WrapperMethod(Selenium2Library):
         driver = self._current_browser();
         driver.get("https://ssodisney--kanaqa.cs90.my.salesforce.com")
         WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.XPATH,
-                                                                             "//em[@class='x-btn-split']")))
-        element =  driver.find_element_by_xpath("//em[@class='x-btn-split']")
-        print("x",element.location)
+                                                                          "//em[@class='x-btn-split']")))
+        element = driver.find_element_by_xpath("//em[@class='x-btn-split']")
+        print("x", element.location)
         print("x", element.location["x"])
         print("y", element.size)
         action = webdriver.ActionChains(driver)
@@ -115,13 +117,10 @@ class WrapperMethod(Selenium2Library):
         action.click()
         action.perform()
         WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.XPATH,
-                                                                          "//ul/li[1]/input")))
+                                                                    "//ul/li[1]/input")))
         driver.find_element_by_xpath("//ul/li[1]/input").click()
 
-
-
-
-    def create_track_tickets_list(self,sheet_name,book):
+    def create_track_tickets_list(self, sheet_name, book):
         sheet = book.sheet_by_name(sheet_name)
         TrackTickets = []
         # Read the content of Alert Ticket
@@ -139,8 +138,9 @@ class WrapperMethod(Selenium2Library):
                     ticket_logged_date_col = col_index
             picklist = False;
             for row_index in xrange(2, sheet.nrows):
-                ticket_day = datetime.datetime(*xlrd.xldate_as_tuple(sheet.cell_value(row_index, ticket_logged_date_col),
-                                                                     book.datemode))
+                ticket_day = datetime.datetime(
+                    *xlrd.xldate_as_tuple(sheet.cell_value(row_index, ticket_logged_date_col),
+                                          book.datemode))
                 today = datetime.datetime.today()
                 first_day = today - datetime.timedelta(days=today.weekday() + 7)
                 last_day = today + datetime.timedelta(days=-today.weekday() - 2)
@@ -167,12 +167,12 @@ class WrapperMethod(Selenium2Library):
                     worklist = work.split("\n")
                     for each_work in workhour.split("\n"):
                         tracklist[each_work] = worklist[index]
-                        day_tracklist[each_work] = [ticket_day.date(),worklist[index]]
+                        day_tracklist[each_work] = [ticket_day.date(), worklist[index]]
                         index += 1
                     tractk = TracTicket(
                         sheet.cell_value(row_index, ticket_work_item_col)
                         , "major", first_day.date(), last_day.date(), 0, release,
-                        1, "vinoth.mahendira", tracklist,day_tracklist)
+                        1, "vinoth.mahendira", tracklist, day_tracklist)
                     TrackTickets.append(tractk)
             for item in TrackTickets:
                 item.printDetails()
@@ -198,13 +198,14 @@ class WrapperMethod(Selenium2Library):
         picklist = False;
         for row_index in xrange(2, sheet.nrows):
             picklist = False
-            if sheet.cell_value(row_index, ticket_QA_column) == "" :
+            if sheet.cell_value(row_index, ticket_QA_column) == "":
                 continue
             try:
                 ticket_day = datetime.datetime(*xlrd.xldate_as_tuple(sheet.cell_value(row_index, ticket_QA_column),
-                                                                 book.datemode))
+                                                                     book.datemode))
             except:
-                print("Exception thrown on ticket %s : %s ",sheet.cell_value(row_index, ticket_ticketID),sys.exc_info()[0])
+                print(
+                "Exception thrown on ticket %s : %s ", sheet.cell_value(row_index, ticket_ticketID), sys.exc_info()[0])
                 continue
 
             today = datetime.datetime.today()
@@ -219,11 +220,13 @@ class WrapperMethod(Selenium2Library):
                 if sheet.cell_value(row_index, ticket_logged_date_col) == "":
                     continue
                 try:
-                    ticket_created_date = datetime.datetime(*xlrd.xldate_as_tuple(sheet.cell_value(row_index, ticket_logged_date_col),
-                                                                 book.datemode))
+                    ticket_created_date = datetime.datetime(
+                        *xlrd.xldate_as_tuple(sheet.cell_value(row_index, ticket_logged_date_col),
+                                              book.datemode))
                 except:
                     print(
-                    "Exception thrown on ticket %s : %s ", sheet.cell_value(row_index, ticket_ticketID), sys.exc_info()[0])
+                        "Exception thrown on ticket %s : %s ", sheet.cell_value(row_index, ticket_ticketID),
+                        sys.exc_info()[0])
                     continue
                 if ticket_created_date >= first_day and ticket_created_date <= last_day:
                     print ("Logged Date ", ticket_created_date.date())
@@ -239,13 +242,13 @@ class WrapperMethod(Selenium2Library):
                 else:
                     release = 4
                 tracklist = {}
-                day_tracklist ={}
+                day_tracklist = {}
                 work = str(sheet.cell_value(row_index, ticket_Work))
-                if len(workhour.split("\n")) !=  len(work.split("\n")):
-                    print("Work %s & Hour spend not equal %s",work,workhour)
+                if len(workhour.split("\n")) != len(work.split("\n")):
+                    print("Work %s & Hour spend not equal %s", work, workhour)
                     return TrackTickets
                 index = 0
-                worktime =workhour.split("\n")
+                worktime = workhour.split("\n")
                 for each_work in work.split("\n"):
                     tracklist[each_work] = worktime[index]
                     if each_work == "Test Case Creation":
@@ -253,25 +256,93 @@ class WrapperMethod(Selenium2Library):
                     else:
                         day_tracklist[each_work] = [ticket_day.date(), worktime[index]]
                     index += 1
-                tractk = TracTicket(sheet.cell_value(row_index, ticket_ticketID) + "-" + sheet.cell_value(row_index,ticket_Description)
+                tractk = TracTicket(
+                    sheet.cell_value(row_index, ticket_ticketID) + "-" + sheet.cell_value(row_index, ticket_Description)
                     , sheet.cell_value(row_index, ticket_Priority), first_day.date(), last_day.date(), 6, release,
-                    1, "vinoth.mahendira", tracklist,day_tracklist)
+                    1, "vinoth.mahendira", tracklist, day_tracklist)
                 TrackTickets.append(tractk)
         for item in TrackTickets:
             item.printDetails()
 
         return TrackTickets
 
-        @keyword('Click last week')
-        def read_this_week_ticket(self, excel_id):
-            # file = ReadGoogleSheet().get_spreadSheet()
-            # book = open_workbook(file_contents=file.read())
-            book = open_workbook("../Data/" + excel_id)
-            TrackTickets = []
-            sheet_names = {"Alert Ticket", "Return Bug Ticket", "TRACK", "Other", "Alert Bug"}
-            # sheet_names = {  "Alert Bug"}
-            for sheet in sheet_names:
-                for item in self.create_track_tickets_list(sheet, book):
-                    TrackTickets.append(item)
 
-            return TrackTickets
+    @keyword('Create Task')
+    def create_ticket(self, tickets):
+        owned_by_text = "Owned by Me (vinoth.mahendira)']"
+        work_place = "on-premise"
+        driver = self._current_browser();
+        ticket_index = 0
+        delay = 10;
+        found = False
+        for element in driver.find_elements_by_xpath("//input[@placeholder='Type Your Summary']"):
+            if (element.text == ""):
+                found = True
+                break;
+            ticket_index += 1
+        if not found:
+            driver.find_element_by_xpath("//a[@title='Add a new row']").click()
+        WebDriverWait(driver, delay).until(
+            driver.find_elements_by_xpath("//input[@placeholder='Type Your Summary']").size == (ticket_index + 1))
+        for ticket in tickets:
+            dict_task_list = ticket.day_tasklist
+            for key in dict_task_list.keys():
+                driver.find_elements_by_xpath("//input[@placeholder='Type Your Summary']")[ticket_index].send_keys(
+                    "#" + ticket.trac_id)
+                WebDriverWait(driver, delay).until(EC.element_to_be_clickable(By.XPATH,
+                                                                              "//a[contains(text(),'" + "#" + ticket.trac_id + "')][preceding::li[text()='" + owned_by_text + "']]"))
+                driver.find_element_by_xpath(
+                    "//a[contains(text(),'" + "#" + ticket.trac_id + "')][preceding::li[text()='" + owned_by_text + "']]").click()
+                WebDriverWait(driver, delay).until(EC.element_to_be_clickable(By.XPATH,
+                                                                              "//select[ancestor::tr[contains(@class,'timesheet-row')]][contains(@class,'timesheet-exclusion')]"))
+                select = Select(driver.find_elements_by_xpath(
+                    "//select[ancestor::tr[contains(@class,'timesheet-row')]][contains(@class,'timesheet-exclusion')]")[
+                                    ticket_index])
+                select.select_by_visible_text(work_place)
+                select = Select(driver.find_elements_by_xpath(
+                    "//select[ancestor::tr[contains(@class,'timesheet-row')]][contains(@class,'timesheet-reason')]")[
+                                    ticket_index])
+                select.select_by_visible_text(key)
+                date = dict_task_list[key][0].strftime('%d-%b-%Y')
+                time = Decimal(dict_task_list[key][1])
+                hour = int(time)
+                minute = str(int((time - hour) * 60)).zfill(2)
+                time_entry = hour + ":" + minute
+                driver.find_elements_by_xpath(
+                    "//div[ancestor::tr[contains(@class,'timesheet-row')]][child::span[@class='ui-date-info'][text()='"+date+"']]")[ticket_index].click()
+                WebDriverWait(driver, delay).until(EC.visibility_of_element_located(By.XPATH,
+                                                                                    "//div[contains(@class,'sticky-popup-container-cloned') and not (contains(@style,'none'))]"))
+                additional_xpath = "[ancestor::div[contains(@class,'sticky-popup-container-cloned') and not(contains(@style,'none'))]]"
+                driver.find_element_by_xpath(
+                    "//input[contains(@class,'timesheet-duration')]" + additional_xpath).send_keys(time_entry)
+                driver.find_element_by_xpath(
+                    "//textarea[contains(@class,'timesheet-comments')]" + additional_xpath).send_keys(
+                    key)
+                driver.find_element_by_xpath(
+                    "//button[text()='Save')]" + additional_xpath).click()
+                WebDriverWait(driver, delay).until(EC.element_to_be_clickable(By.XPATH,
+                                                                              "//select[ancestor::tr[contains(@class,'timesheet-row')]][contains(@class,'timesheet-exclusion')]"))
+                assert (driver.find_elements_by_xpath(
+                    "//div[ancestor::tr[contains(@class,'timesheet-row')]][child::span[@class='ui-date-info'][text()='"+date+"']]//span[1]")[ticket_index].text == date)
+                ticket_index += 1
+                driver.find_element_by_xpath("//a[@title='Add a new row']").click()
+                WebDriverWait(driver, delay).until(
+                    driver.find_elements_by_xpath("//input[@placeholder='Type Your Summary']").size == (
+                                ticket_index + 1))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

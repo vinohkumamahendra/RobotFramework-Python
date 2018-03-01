@@ -3,11 +3,12 @@ Library           Collections
 Library           ../Library/MyLibrary.py
 Library           ../Library/WrapperMethod.py
 Library           BuiltIn
+Library           OperatingSystem
 *** Variables ***
 ${URL}         http://trac.aspiresys.com/
 ${USERNAME}    vinoth.mahendira
 ${PSWD}        Vino_Feb18
-${BROWSER}        Firefox
+${BROWSER}        Chrome
 ${DELAY}           10
 ${NOTc}            8
 ${Release}         3
@@ -18,7 +19,21 @@ ${TicketType}     Maintenance
 
 *** Keywords ***
 Open Browser To Trac Page
-    Open Browser    ${URL}    ${BROWSER}
+    #Set Environment Variable    webdriver.chrome.driver E:/Robot Framework/My Project/Robot/driver/chromedriver.exe
+    #Set Environment Variable    webdriver.ie.driver     E:/Robot Framework/My Project/Robot/driver/IEDriverServer.exe
+    #Open Browser    ${URL}    ${BROWSER}
+    #Open Browser    ${URL}    ie
+    #Create Webdriver    ${BROWSER}    executable_path=driver/chromedriver.exe
+    #Create Webdriver    ${BROWSER}    executable_path=../driver/chromedriver.exe
+    ${caps}=    Evaluate    sys.modules['selenium.webdriver'].DesiredCapabilities.INTERNETEXPLORER    sys,selenium.webdriver
+    #Set To Dictionary    ${caps}    ignoreProtectedModeSettings    ${True}
+    #Create WebDriver    Ie    capabilities=${caps}
+    #Goto    http://www.google.com
+    #Set Environment Variable    no_proxy    127.0.0.1
+    #Set Environment Variable    webdriver.ie.driver    E:/Robot Framework/My Project/Robot/driver/IEDriverServer.exe
+    #Open Browser    ${BROWSER}    ie
+    Create Webdriver    ${BROWSER}    executable_path=../driver/chromedriver.exe
+    Go To   ${URL}
     Set Selenium Timeout  ${DELAY}
     Maximize Browser Window
     Input Text    user    ${USERNAME}
